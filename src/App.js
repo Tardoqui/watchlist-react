@@ -1,24 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+
+import moviesData from "./data/movies";
+import { MoviesList } from "./components/MoviesList";
+import { WatchList } from "./components/WatchList";
+import { SearchBar } from "./components/SearchBar";
 
 function App() {
+  const [movies, setMovies] = useState([...moviesData]);
+  const [backUp, setBackUp] = useState([...moviesData]);
+  const [favMovies, setFavMovies] = useState([]);
+
+  function filterMovies(filterParams) {
+    if (filterParams === "") {
+      setMovies(backUp);
+      return;
+    }
+
+    const filtred = movies.filter((currentMovie) => {
+      return currentMovie.original_title
+        .toLowerCase()
+        .includes(filterParams.toLowerCase());
+    });
+
+    setMovies(filtred);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <SearchBar filterState={filterMovies} />
+      <div className="d-flex">
+        <MoviesList
+          movies={movies}
+          favMovies={favMovies}
+          setFavMovies={setFavMovies}
+        />
+        <WatchList favMovies={favMovies} setFavMovies={setFavMovies} />
+      </div>
+    </>
   );
 }
 
